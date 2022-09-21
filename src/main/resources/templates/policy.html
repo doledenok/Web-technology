@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Информация о политике выплат</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style>
+        .indent {
+            margin-left: 30px;
+            margin-right: 30px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="general :: page-header"> </div>
+
+<div class="indent">
+    <div id="policyInfo">
+        <h4 th:text="'Политика ' + ${policy.getId()}"></h4>
+        <p th:if="${policy.getPosition() != null}" th:text="'Должность: ' + ${policy.getPosition().getName()}"></p>
+        <p th:text="'Сумма: ' + ${policy.getSum()}"></p>
+        <p th:if="${policy.getRegularity() != null}" th:text="'Регулярность: ' + ${policy.getRegularity()}"></p>
+        <p th:if="${policy.getType() != null}" th:text="'Тип: ' + ${policy.getType()}"></p>
+        <p th:if="${policy.getDescription() != null}" th:text="'Описание: ' + ${policy.getDescription()}"></p>
+        <!-- FIXME: добавить проекты с ролями к ним-->
+    </div>
+
+    <!--edit delete order button group-->
+    <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+        <div class="btn-group mr-2" role="group" aria-label="First group">
+            <form style="margin-right: 30px" method="get" action="/editPolicy">
+                <input type="hidden" name="policyId" th:value="${policy.getId()}"/>
+                <button id="editButton" type="submit" class="btn btn-secondary">Редактировать информацию о политике
+                </button>
+            </form>
+            <form style="margin-right: 30px" method="post" action="/removePolicy">
+                <input type="hidden" name="policyId" th:value="${policy.getId()}"/>
+                <button id="deleteButton" type="submit" class="btn btn-secondary">Удалить политику из базы
+                </button>
+            </form>
+        </div>
+    </div>
+    <!--end of button group-->
+
+</div>
+
+<div th:replace="general :: site-footer"></div>
+<div th:replace="general :: site-script"></div>
+
+</body>
+</html>

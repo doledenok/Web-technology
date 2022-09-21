@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Редактировать проект</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style>
+        .indent {
+            margin-left: 30px;
+            margin-right: 30px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="general :: page-header"> </div>
+
+<div class="indent">
+    <form method="post" action="/saveEmployee">
+        <input type="hidden" id="employeeId" name="employeeId" th:value="${employee.getId()}"/>
+
+        <label for="employeeName">ФИО:</label>
+        <input type="text" id="employeeName" name="employeeName" required th:value="${employee.getName()}"><br><br>
+
+        <label for="employeeName">Должность:</label>
+        <input type="text" id="employeePosition" name="employeePosition" th:value="${employee.getPositionName()}"><br><br>
+
+        <label for="employeeName">Образование:</label>
+        <input type="text" id="employeeEducation" name="employeeEducation" th:value="${employee.getEducation()}"><br><br>
+
+        <label for="employeeName">Адрес:</label>
+        <input type="text" id="employeeAddress" name="employeeAddress" th:value="${employee.getAddress()}"><br><br>
+
+        <label for="employeeName">Стаж:</label>
+        <input type="text" id="employeeWorkExperience" name="employeeWorkExperience" th:value="${employee.getWorkExperience()}"><br><br>
+
+        <label for="employeeName">Статус:</label>
+        <input type="text" id="employeeStatus" name="employeeStatus" th:value="${employee.getStatus()}"><br><br>
+
+        <label for="employeeName">Дата рождения:</label>
+        <input type="text" id="employeeDateOfBirth" name="employeeDateOfBirth" th:value="${employee.getDateOfBirth()}"><br><br>
+
+        <input id="submitButton" type="submit" value="Сохранить" class="btn btn-primary">
+    </form>
+</div>
+
+<div th:replace="general :: site-footer"></div>
+<div th:replace="general :: site-script"></div>
+
+</body>
+</html>

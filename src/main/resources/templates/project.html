@@ -1,0 +1,58 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Информация о месте</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style>
+        .indent {
+            margin-left: 30px;
+            margin-right: 30px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="general :: page-header"> </div>
+
+<div class="indent">
+    <div id="projectInfo">
+        <h4 th:text="${project.getName()}"></h4>
+        <p th:text="'Название: ' + ${project.getName()}"></p>
+        <p th:text="'Дата начала: ' + ${project.getStart()}"></p>
+        <p th:if="${project.getEnd() != null}" th:text="'Дата окончания: ' + ${project.getEnd()}"></p>
+        <p th:text="'Описание: ' + ${project.getDescription()}"></p>
+        <!-- FIXME: к ролям добавить имя служащего, который занимает эту роль-->
+        <p> Роли проекта:&nbsp <span
+                th:if="${projectRoleService.getProjectRolesByProjectId(project.getId()) == null}">нет</span>
+            <a th:each="role, iter: ${projectRoleService.getProjectRolesByProjectId(project.getId())}">
+                <span th:text="${role.getName()} + ${!iter.last ? ',' : ''}"></span>
+            </a>
+        </p>
+    </div>
+
+    <!--edit delete order button group-->
+    <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+        <div class="btn-group mr-2" role="group" aria-label="First group">
+            <form style="margin-right: 30px" method="get" action="/editProject">
+                <input type="hidden" name="projectId" th:value="${project.getId()}"/>
+                <button id="editButton" type="submit" class="btn btn-secondary">Редактировать информацию о проекте
+                </button>
+            </form>
+            <form style="margin-right: 30px" method="post" action="/removeProject">
+                <input type="hidden" name="projectId" th:value="${project.getId()}"/>
+                <button id="deleteButton" type="submit" class="btn btn-secondary">Удалить проект из базы
+                </button>
+            </form>
+        </div>
+    </div>
+    <!--end of button group-->
+
+</div>
+
+<div th:replace="general :: site-footer"></div>
+<div th:replace="general :: site-script"></div>
+
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <title>Главная страница</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <style>
+    .indent {
+      margin-left: 30px;
+      margin-right: 30px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div th:replace="general :: page-header"></div>
+
+<div class="indent">
+  <h3 class="text-center">Система управления информацией о зарплатах служащих компании</h3>
+  <br>
+  <span class="text-center indent"> Здесь вы можете добавлять, редактировать, удалять и получать
+  информацию о служащих компании, проектах и политиках выплат. </span>
+  <br>
+
+  <div th:replace="general :: site-footer"></div>
+</div>
+
+<div class="indent">
+  <form method="get" action="/editEmployee">
+    <button id="addEmployeeButton" type="submit" class="btn btn-primary">Добавить служащего</button>
+  </form>
+  <br>
+  <form method="get" action="/editProject">
+    <button id="addProjectButton" type="submit" class="btn btn-primary">Добавить проект</button>
+  </form>
+  <br>
+  <form method="get" action="/editPolicy">
+    <button id="addPolicyButton" type="submit" class="btn btn-primary">Добавить политику</button>
+  </form>
+  <br>
+</div>
+
+<div th:replace="general :: site-script"></div>
+
+</body>
+</html>

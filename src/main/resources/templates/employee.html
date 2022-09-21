@@ -1,0 +1,65 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <style>
+    .indent {
+      margin-left: 30px;
+      margin-right: 30px;
+      margin-top: 20px;
+    }
+  </style>
+  <title>Информация о служащем</title>
+</head>
+
+<body>
+<div th:replace="general :: page-header"> </div>
+
+<div class="indent">
+  <div id="employeeInfo">
+    <h4 th:text="${employee.getName()}"></h4>
+    <p th:if="${employee.getPosition() != null}" th:text="'Текущая должность: ' + ${employee.getPosition().getName()}"></p>
+    <p th:if="${employee.getEducation() != null}" th:text="'Образование: ' + ${employee.getEducation()}"></p>
+    <p th:if="${employee.getAddress() != null}" th:text="'Адрес: ' + ${employee.getAddress()}"></p>
+    <p th:if="${employee.getWorkExperience() != null}" th:text="'Стаж: ' + ${employee.getWorkExperience()}"></p>
+    <p th:if="${employee.getStatus() != null}" th:text="'Статус: ' + ${employee.getStatus()}"></p>
+    <p th:if="${employee.getDateOfBirth() != null}" th:text="'Дата рождения: ' + ${employee.getDateOfBirth()}"></p>
+    <p> История должностей:&nbsp <span th:if="${posHistory.getPosHistoryByEmployeeId(employee.getId()) == null}">нет</span>
+      <a th:each="posHistory, iter: ${posHistory.getPosHistoryByEmployeeId(employee.getId())}">
+        <span th:text="${posHistory.toString()} + ${!iter.last ? ', ' : ''}"></span>
+      </a>
+    </p>
+
+    <p> История проектов:&nbsp <span th:if="${employeeService.getProjectsByEmpId(employee.getId()) == null}">нет</span>
+      <a th:each="project, iter: ${employeeService.getProjectsByEmpId(employee.getId())}" th:href="'/project?projectId=' + ${project.getId()}">
+        <!-- FIXME: добавить роль к проекту-->
+        <span th:text="${project.getName()} + ${!iter.last ? ', ' : ''}"></span>
+      </a>
+    </p>
+    <!-- FIXME: добавить историю выплат -->
+  </div>
+
+  <!--edit delete order button group-->
+  <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+    <div class="btn-group mr-2" role="group" aria-label="First group">
+      <form style="margin-right: 30px" method="get" action="/editEmployee">
+        <input type="hidden" name="employeeId" th:value="${employee.getId()}"/>
+        <button id="editButton" type="submit" class="btn btn-secondary">Редактировать информацию о человеке</button>
+      </form>
+      <form method="post" action="/removeEmployee">
+        <input type="hidden" name="employeeId" th:value="${employee.getId()}"/>
+        <button id="deleteButton" type="submit" class="btn btn-secondary">Удалить человека из базы</button>
+      </form>
+    </div>
+  </div>
+  <!--end of button group-->
+
+</div>
+
+<div th:replace="general :: site-footer"></div>
+<div th:replace="general :: site-script"></div>
+
+</body>
+</html>
