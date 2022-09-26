@@ -29,13 +29,9 @@ public class ProjectDAOImpl extends GenericDAOImpl<Project, Long> implements Pro
             List<Predicate> predicates = new ArrayList<>();
             if (filter.getName() != null)
                 predicates.add(builder.like(root.get("name"), likeExpr(filter.getName())));
-            // FIXME: поиск по датам должен работать скорее всего не так.
-            if (filter.getStartDate() != null)
-                predicates.add(builder.like(root.get("address"), likeExpr(filter.getStartDate())));
-            if (filter.getEndDate() != null)
-                predicates.add(builder.like(root.get("experience"), likeExpr(filter.getEndDate())));
+            // FIXME: добавить поиск по датам.
             if (filter.getDescription() != null)
-                predicates.add(builder.like(root.get("education"), likeExpr(filter.getDescription())));
+                predicates.add(builder.like(root.get("description"), likeExpr(filter.getDescription())));
 
             if (predicates.size() != 0)
                 criteriaQuery.where(predicates.toArray(new Predicate[0]));

@@ -17,9 +17,6 @@ public interface PolicyDAO extends GenericDAO<Policy, Long> {
     @Builder
     @Getter
     class Filter {
-        private String position;
-        private String role;
-        private Long sum;
         private String regularity;
         private String type;
         private String description;

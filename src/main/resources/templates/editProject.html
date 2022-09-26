@@ -17,6 +17,7 @@
 <div th:replace="general :: page-header"> </div>
 
 <div class="indent">
+    <h1>Изменить проект</h1>
     <form method="post" action="/saveProject">
         <input type="hidden" id="projectId" name="projectId" th:value="${project.getId()}"/>
 

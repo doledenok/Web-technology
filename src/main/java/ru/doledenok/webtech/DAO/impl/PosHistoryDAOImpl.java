@@ -23,9 +23,8 @@ public class PosHistoryDAOImpl extends GenericDAOImpl<PosHistory, Long> implemen
 
     @Override
     public List<PosHistory> getPosHistoryByEmployeeId(Long empId) {
-        //FIXME: Is it really works?
         try (Session session = sessionFactory.openSession()) {
-            Query<PosHistory> query = session.createQuery("FROM PosHistory WHERE emp_id = :gotEmpId", PosHistory.class)
+            Query<PosHistory> query = session.createQuery("from PosHistory where emp.id = :gotEmpId", PosHistory.class)
                     .setParameter("gotEmpId", empId);
             return query.getResultList().size() == 0 ? null : query.getResultList();
         }

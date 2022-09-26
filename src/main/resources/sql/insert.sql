@@ -8,8 +8,9 @@ INSERT INTO position VALUES
 
 TRUNCATE employee RESTART IDENTITY CASCADE;
 INSERT INTO employee VALUES
-    (1, 1, 'Иванов Иван Иванович', 'ВМК МГУ', 'Караганда', '5 лет', 'в штате', date('2000-06-22')),
-    (2, 2, 'Сергеев Сергей Сергеевич', 'ВМК МГУ', 'Караганда', '5 лет', 'в штате', date('2000-06-22'));
+    (1, 1, 'Иванов Иван Иванович', 'ВМК МГУ', 'Москва', '1 год', 'в штате', date('2000-06-22')),
+    (2, 2, 'Сергеев Сергей Сергеевич', 'ВМК МГУ', 'Караганда', '3 года', 'в штате', date('2000-06-22')),
+    (3, 2, 'Максимов Максим Максимович', 'ФИВТ МФТИ', 'Долгопрудный', '2 года', 'в штате', date('1999-09-10'));
 
 TRUNCATE positions_history RESTART IDENTITY CASCADE;
 INSERT INTO positions_history VALUES
@@ -43,4 +44,12 @@ INSERT INTO employee_role VALUES
     (5, 2, 7, date('2019-01-10'), date('2020-01-10')),
     (6, 2, 3, date('2020-01-10'), null);
 
-/*SELECT * FROM project WHERE proj_id IN (SELECT proj_id FROM project_roles WHERE proj_role_id IN (SELECT proj_role_id FROM employee_role WHERE emp_id = 1))
+TRUNCATE payment_policy RESTART IDENTITY CASCADE;
+INSERT INTO payment_policy VALUES
+    (1, 1, null, 15000, 'каждый месяц', 'зарплата', 'зарплата лаборанта'),
+    (2, 2, null, 20000, 'каждый месяц', 'зарплата', 'зарплата старшего лаборанта');
+
+TRUNCATE payment RESTART IDENTITY CASCADE;
+INSERT INTO payment VALUES
+    (1, 1, 1, date('2022-03-10')),
+    (2, 2, 2, date('2022-03-10'));

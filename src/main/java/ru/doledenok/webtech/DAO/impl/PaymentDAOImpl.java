@@ -29,9 +29,8 @@ public class PaymentDAOImpl extends GenericDAOImpl<Payment, Long> implements Pay
 
     @Override
     public List<Payment> getAllPaymentsByEmpId(Long empId) {
-        //FIXME: Is it really works?
         try (Session session = sessionFactory.openSession()) {
-            Query<Payment> query = session.createQuery("FROM Payment WHERE emp_id = :gotEmpId", Payment.class)
+            Query<Payment> query = session.createQuery("from Payment where emp.id = :gotEmpId", Payment.class)
                     .setParameter("gotEmpId", empId);
             return query.getResultList().size() == 0 ? null : query.getResultList();
         }

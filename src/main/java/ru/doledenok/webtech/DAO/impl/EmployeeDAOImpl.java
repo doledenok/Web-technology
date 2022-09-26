@@ -5,6 +5,7 @@ import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 import ru.doledenok.webtech.DAO.EmployeeDAO;
 import ru.doledenok.webtech.models.Employee;
+import ru.doledenok.webtech.models.Payment;
 import ru.doledenok.webtech.models.Project;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -22,25 +23,18 @@ public class EmployeeDAOImpl extends GenericDAOImpl<Employee, Long> implements E
     }
 
     @Override
-    public List<Employee> getAllEmployeesByName(String employeeName) {
+    public List<Project> getProjectsByEmpId(Long empId) {
         try (Session session = sessionFactory.openSession()) {
-            Query<Employee> query = session.createQuery("from Employee where name like :gotName", Employee.class)
-                    .setParameter("gotName", likeExpr(employeeName));
+            Query<Project> query = session.createQuery("from Project where id in (select proj from ProjectRole where id in (select proj_role from EmpRole where emp.id = :gotEmpId))", Project.class)
+                    .setParameter("gotEmpId", empId);
             return query.getResultList().size() == 0 ? null : query.getResultList();
         }
     }
 
     @Override
-    public Employee getSingleEmployeeByName(String employeeName) {
-        List<Employee> candidates = this.getAllEmployeesByName(employeeName);
-        return candidates == null ? null :
-                candidates.size() == 1 ? candidates.get(0) : null;
-    }
-
-    @Override
-    public List<Project> getProjectsByEmpId(Long empId) {
+    public List<Payment> getPaymentsByEmpId(Long empId) {
         try (Session session = sessionFactory.openSession()) {
-            Query<Project> query = session.createQuery("from Project where id in (select proj from ProjectRole where id in (select proj_role from EmpRole where emp.id = :gotEmpId))", Project.class)
+            Query<Payment> query = session.createQuery("from Payment where emp.id = :gotEmpId", Payment.class)
                     .setParameter("gotEmpId", empId);
             return query.getResultList().size() == 0 ? null : query.getResultList();
         }
@@ -67,7 +61,7 @@ public class EmployeeDAOImpl extends GenericDAOImpl<Employee, Long> implements E
             if (filter.getAddress() != null)
                 predicates.add(builder.like(root.get("address"), likeExpr(filter.getAddress())));
             if (filter.getExperience() != null)
-                predicates.add(builder.like(root.get("experience"), likeExpr(filter.getExperience())));
+                predicates.add(builder.like(root.get("workExperience"), likeExpr(filter.getExperience())));
             if (filter.getEducation() != null)
                 predicates.add(builder.like(root.get("education"), likeExpr(filter.getEducation())));
             if (filter.getStatus() != null)

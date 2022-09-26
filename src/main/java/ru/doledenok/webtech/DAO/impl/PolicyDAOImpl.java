@@ -29,19 +29,12 @@ public class PolicyDAOImpl extends GenericDAOImpl<Policy, Long> implements Polic
             Root<Policy> root = criteriaQuery.from(Policy.class);
 
             List<Predicate> predicates = new ArrayList<>();
-            if (filter.getPosition() != null)
-                predicates.add(builder.like(root.get("position"), likeExpr(filter.getPosition())));
-            // FIXME: поиск по сумме надо наладить
-            if (filter.getRole() != null)
-                predicates.add(builder.like(root.get("address"), likeExpr(filter.getRole())));
-            //if (filter.getSum() != null)
-            //    predicates.add(builder.like(root.get("sum"), likeExpr(filter.getSum())));
             if (filter.getRegularity() != null)
-                predicates.add(builder.like(root.get("education"), likeExpr(filter.getRegularity())));
+                predicates.add(builder.like(root.get("regularity"), likeExpr(filter.getRegularity())));
             if (filter.getType() != null)
-                predicates.add(builder.like(root.get("education"), likeExpr(filter.getType())));
+                predicates.add(builder.like(root.get("type"), likeExpr(filter.getType())));
             if (filter.getDescription() != null)
-                predicates.add(builder.like(root.get("education"), likeExpr(filter.getDescription())));
+                predicates.add(builder.like(root.get("description"), likeExpr(filter.getDescription())));
 
             if (predicates.size() != 0)
                 criteriaQuery.where(predicates.toArray(new Predicate[0]));

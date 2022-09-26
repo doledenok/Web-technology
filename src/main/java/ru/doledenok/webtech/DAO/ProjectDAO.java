@@ -14,8 +14,6 @@ public interface ProjectDAO extends GenericDAO<Project, Long> {
     @Getter
     class Filter {
         private String name;
-        private String startDate;
-        private String endDate;
         private String description;
     }
 

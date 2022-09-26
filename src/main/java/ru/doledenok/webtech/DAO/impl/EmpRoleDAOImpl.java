@@ -19,9 +19,8 @@ public class EmpRoleDAOImpl extends GenericDAOImpl<EmpRole, Long> implements Emp
 
     @Override
     public List<EmpRole> getEmployeeRolesByProjectId(Long empId) {
-        //FIXME: Is it really works?
         try (Session session = sessionFactory.openSession()) {
-            Query<EmpRole> query = session.createQuery("FROM EmpRole WHERE proj_id = :gotEmpId", EmpRole.class)
+            Query<EmpRole> query = session.createQuery("from EmpRole where id = :gotEmpId", EmpRole.class)
                     .setParameter("gotEmpId", empId);
             return query.getResultList().size() == 0 ? null : query.getResultList();
         }

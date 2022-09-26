@@ -8,8 +8,6 @@ import javax.persistence.*;
 @Table(name = "positions_history")
 @Getter
 @Setter
-// FIXME: можно ли это безнаказанно убрать?
-//@ToString
 @NoArgsConstructor
 @RequiredArgsConstructor
 @AllArgsConstructor

@@ -17,7 +17,6 @@ public class ProjectRoleDAOImpl extends GenericDAOImpl<ProjectRole, Long> implem
 
     @Override
     public List<ProjectRole> getProjectRolesByProjectId(Long projId) {
-        //FIXME: Is it really works?
         try (Session session = sessionFactory.openSession()) {
             Query<ProjectRole> query = session.createQuery("from ProjectRole where proj.id = :gotProjId", ProjectRole.class)
                     .setParameter("gotProjId", projId);

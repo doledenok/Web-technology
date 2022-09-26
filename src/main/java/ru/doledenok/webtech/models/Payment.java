@@ -29,7 +29,7 @@ public class Payment implements GenericEntity<Long> {
     @ToString.Exclude
     @JoinColumn(nullable = false, name = "policy_id")
     @NonNull
-    private Policy pos;
+    private Policy policy;
 
     @Column(name = "date")
     @NonNull

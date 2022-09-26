@@ -3,20 +3,22 @@ package ru.doledenok.webtech.DAO;
 import lombok.Builder;
 import lombok.Getter;
 import ru.doledenok.webtech.models.Employee;
+import ru.doledenok.webtech.models.Payment;
 import ru.doledenok.webtech.models.Project;
 
 import java.util.List;
 
 public interface EmployeeDAO extends GenericDAO<Employee, Long> {
 
-    List<Employee> getAllEmployeesByName(String Name);
-    Employee getSingleEmployeeByName(String employeeName);
+    //List<Employee> getAllEmployeesByName(String Name);
+    //Employee getSingleEmployeeByName(String employeeName);
     List<Employee> getByFilter(Filter filter);
 
     List<Project> getProjectsByEmpId(Long empId);
 
     List<String> getKnownEducation();
 
+    List<Payment> getPaymentsByEmpId(Long empId);
     @Builder
     @Getter
     class Filter {

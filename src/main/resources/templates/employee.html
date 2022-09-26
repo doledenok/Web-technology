@@ -26,6 +26,7 @@
     <p th:if="${employee.getWorkExperience() != null}" th:text="'Стаж: ' + ${employee.getWorkExperience()}"></p>
     <p th:if="${employee.getStatus() != null}" th:text="'Статус: ' + ${employee.getStatus()}"></p>
     <p th:if="${employee.getDateOfBirth() != null}" th:text="'Дата рождения: ' + ${employee.getDateOfBirth()}"></p>
+
     <p> История должностей:&nbsp <span th:if="${posHistory.getPosHistoryByEmployeeId(employee.getId()) == null}">нет</span>
       <a th:each="posHistory, iter: ${posHistory.getPosHistoryByEmployeeId(employee.getId())}">
         <span th:text="${posHistory.toString()} + ${!iter.last ? ', ' : ''}"></span>
@@ -38,7 +39,12 @@
         <span th:text="${project.getName()} + ${!iter.last ? ', ' : ''}"></span>
       </a>
     </p>
-    <!-- FIXME: добавить историю выплат -->
+
+    <p> История выплат:&nbsp <span th:if="${employeeService.getPaymentsByEmpId(employee.getId()) == null}">нет</span>
+      <a th:each="payment, iter: ${employeeService.getPaymentsByEmpId(employee.getId())}">
+        <span th:text="${payment.getPolicy().getDescription()} + ' - ' + ${payment.getPolicy().getSum()} + ${!iter.last ? ', ' : ''}"></span>
+      </a>
+    </p>
   </div>
 
   <!--edit delete order button group-->
@@ -46,11 +52,11 @@
     <div class="btn-group mr-2" role="group" aria-label="First group">
       <form style="margin-right: 30px" method="get" action="/editEmployee">
         <input type="hidden" name="employeeId" th:value="${employee.getId()}"/>
-        <button id="editButton" type="submit" class="btn btn-secondary">Редактировать информацию о человеке</button>
+        <button id="editButton" type="submit" class="btn btn-secondary">Редактировать информацию о служащем</button>
       </form>
       <form method="post" action="/removeEmployee">
         <input type="hidden" name="employeeId" th:value="${employee.getId()}"/>
-        <button id="deleteButton" type="submit" class="btn btn-secondary">Удалить человека из базы</button>
+        <button id="deleteButton" type="submit" class="btn btn-secondary">Удалить служащего из базы</button>
       </form>
     </div>
   </div>

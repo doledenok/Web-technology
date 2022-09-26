@@ -60,7 +60,7 @@ public class EmployeeController {
         Employee employee = employeeDAO.getById(employeeId);
 
         if (employee == null) {
-            model.addAttribute("error_msg", "В базе нет человека с ID = " + employeeId);
+            model.addAttribute("error_msg", "В базе нет служащего с ID = " + employeeId);
             return "errorPage";
         }
 

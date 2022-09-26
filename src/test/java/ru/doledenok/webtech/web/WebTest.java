@@ -1,26 +1,31 @@
-package ru.doledenok.webtech.DAO;
+package ru.doledenok.webtech.web;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.openqa.selenium.*;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
+import ru.doledenok.webtech.DAO.*;
 import ru.doledenok.webtech.models.*;
 
-import java.util.*;
 import java.sql.Date;
-import java.util.stream.Collectors;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
-@SpringBootTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource(locations="classpath:application.properties")
-public class DAOTest {
-
+public class WebTest {
     @Autowired
     private EmployeeDAO employeeDAO;
     @Autowired
@@ -39,182 +44,171 @@ public class DAOTest {
     private PaymentDAO paymentDAO;
     @Autowired
     private SessionFactory sessionFactory;
+    private final String rootTitle = "Главная страница";
+    private final String employeesTitle = "Служащие";
+    private final String policiesTitle = "Платёжные политики";
+    private final String projectsTitle = "Список проектов";
+    private final String projectTitle = "Информация о проекте";
+    private final String editEmployeeTitle = "Редактировать информацию о служащем";
+    private final String editPolicyTitle = "Редактировать платёжную политику";
+    private final String editProjectTitle = "Редактировать проект";
+    private final String employeeTitle = "Информация о служащем";
+    private final String policyTitle = "Информация о политике выплат";
 
     @Test
-    void testEmptyEmployeeFilter() {
-        EmployeeDAO.Filter filter = EmployeeDAO.getFilterBuilder().build();
-        Collection<Employee> res = employeeDAO.getByFilter(filter);
-
-        Set<String> namesExpected = new HashSet<>();
-        namesExpected.add("Иванов Иван Иванович");
-        namesExpected.add("Сергеев Сергей Сергеевич");
-        namesExpected.add("Максимов Максим Максимович");
-
-        assertEquals(namesExpected, res.stream().map(Employee::getName).collect(Collectors.toSet()));
+    void MainPage() {
+        ChromeDriver driver = new ChromeDriver();
+        driver.get("http://localhost:8080/");
+        assertEquals(rootTitle, driver.getTitle());
+        driver.quit();
     }
 
     @Test
-    void testAllEmployeeFilter() {
-        EmployeeDAO.Filter filter = EmployeeDAO.getFilterBuilder()
-                .name("Максим")
-                .address("Долгопрудный")
-                .education("ФИВТ МФТИ")
-                .status("в штате")
-                .experience("2 года").build();
-        Collection<Employee> res = employeeDAO.getByFilter(filter);
+    void HeaderTest() {
+        ChromeDriver driver = new ChromeDriver();
+        driver.get("http://localhost:8080/");
 
-        Set<String> namesExpected = new HashSet<>();
-        namesExpected.add("Максимов Максим Максимович");
+        WebElement employeesButton = driver.findElement(By.id("employeesListLink"));
+        employeesButton.click();
+        wait(driver);
+        assertEquals(employeesTitle, driver.getTitle());
 
-        assertEquals(namesExpected, res.stream().map(Employee::getName).collect(Collectors.toSet()));
+        WebElement projectsButton = driver.findElement(By.id("projectsListLink"));
+        projectsButton.click();
+        wait(driver);
+        assertEquals(projectsTitle, driver.getTitle());
+
+        WebElement policiesButton = driver.findElement(By.id("policiesListLink"));
+        policiesButton.click();
+        wait(driver);
+        assertEquals(policiesTitle, driver.getTitle());
+
+        WebElement rootButton = driver.findElement(By.id("rootLink"));
+        rootButton.click();
+        wait(driver);
+        assertEquals(rootTitle, driver.getTitle());
+
+        driver.quit();
     }
 
     @Test
-    void testGetKnownEducation() {
-        Collection<String> res = employeeDAO.getKnownEducation();
+    void addEmployee() {
+        ChromeDriver driver = new ChromeDriver();
+        //driver.manage().window().setSize(new Dimension(1024,1024));
+        driver.get("http://localhost:8080/");
+        assertEquals(rootTitle, driver.getTitle());
+        WebElement addEmployee = driver.findElement(By.id("addEmployeeButton"));
+        addEmployee.click();
+        wait(driver);
+        assertEquals(editEmployeeTitle, driver.getTitle());
 
-        assertThat(res)
-                .containsExactlyInAnyOrder("ВМК МГУ", "ФИВТ МФТИ");
+        driver.findElement(By.id("employeeName")).sendKeys("Тестовый Тест Тестович");
+        driver.findElement(By.id("employeePosition")).sendKeys("Директор");
+        driver.findElement(By.id("employeeEducation")).sendKeys("ФКН ВШЭ");
+        driver.findElement(By.id("employeeAddress")).sendKeys("Москва");
+        driver.findElement(By.id("employeeWorkExperience")).sendKeys("20 лет");
+        driver.findElement(By.id("employeeStatus")).sendKeys("Работает");
+        driver.findElement(By.id("employeeDateOfBirth")).sendKeys("1970-10-30");
+        driver.findElement(By.id("submitButton")).click();
+        wait(driver);
+
+        assertEquals(employeeTitle, driver.getTitle());
+        WebElement employeeInfo = driver.findElement(By.id("employeeInfo"));
+        List<WebElement> cells = employeeInfo.findElements(By.tagName("p"));
+
+        assertEquals(cells.get(0).getText(), "Текущая должность: Директор");
+        assertEquals(cells.get(1).getText(), "Образование: ФКН ВШЭ");
+        assertEquals(cells.get(2).getText(), "Адрес: Москва");
+        assertEquals(cells.get(3).getText(), "Стаж: 20 лет");
+        assertEquals(cells.get(4).getText(), "Статус: Работает");
+        assertEquals(cells.get(5).getText(), "Дата рождения: 1970-10-30");
+        assertEquals(cells.get(6).getText(), "История должностей:  нет");
+        assertEquals(cells.get(7).getText(), "История проектов:  нет");
+        assertEquals(cells.get(8).getText(), "История выплат:  нет");
+
+        driver.quit();
     }
 
     @Test
-    void testGetProjectsByEmpId() {
-        Collection<Project> res = employeeDAO.getProjectsByEmpId(1L);
+    void addProject() {
+        ChromeDriver driver = new ChromeDriver();
+        driver.get("http://localhost:8080/");
+        assertEquals(rootTitle, driver.getTitle());
+        WebElement addProject = driver.findElement(By.id("addProjectButton"));
+        addProject.click();
+        wait(driver);
+        assertEquals(editProjectTitle, driver.getTitle());
 
-        Set<String> namesExpected = new HashSet<>();
-        namesExpected.add("Проект1");
-        namesExpected.add("Проект3");
+        driver.findElement(By.id("projectName")).sendKeys("Тестовый проект");
+        driver.findElement(By.id("projectDescription")).sendKeys("Описание тестового проекта");
+        driver.findElement(By.id("projectStartDate")).sendKeys("2022-09-22");
+        driver.findElement(By.id("projectEndDate")).sendKeys("2023-09-22");
+        driver.findElement(By.id("submitButton")).click();
+        wait(driver);
 
-        assertEquals(namesExpected, res.stream().map(Project::getName).collect(Collectors.toSet()));
+        assertEquals(projectTitle, driver.getTitle());
+        WebElement projectInfo = driver.findElement(By.id("projectInfo"));
+        List<WebElement> cells = projectInfo.findElements(By.tagName("p"));
+
+        assertEquals(cells.get(0).getText(), "Название: Тестовый проект");
+        assertEquals(cells.get(1).getText(), "Дата начала: 2022-09-22");
+        assertEquals(cells.get(2).getText(), "Дата окончания: 2023-09-22");
+        assertEquals(cells.get(3).getText(), "Описание: Описание тестового проекта");
+        assertEquals(cells.get(4).getText(), "Роли проекта:  нет");
+
+        driver.quit();
     }
 
     @Test
-    void testGetPaymentsByEmpId() {
-        Collection<Payment> res = employeeDAO.getPaymentsByEmpId(1L);
+    void addPolicy() {
+        ChromeDriver driver = new ChromeDriver();
+        driver.get("http://localhost:8080/");
+        assertEquals(rootTitle, driver.getTitle());
+        WebElement addPolicy = driver.findElement(By.id("addPolicyButton"));
+        addPolicy.click();
+        wait(driver);
+        assertEquals(editPolicyTitle, driver.getTitle());
 
-        Set<Long> idExpected = new HashSet<>();
-        idExpected.add(1L);
+        driver.findElement(By.id("policyPositionName")).sendKeys("Директор");
+        driver.findElement(By.id("policySum")).sendKeys("500000");
+        driver.findElement(By.id("policyRegularity")).sendKeys("каждый месяц");
+        driver.findElement(By.id("submitButton")).click();
+        wait(driver);
 
-        assertEquals(idExpected, res.stream().map(Payment::getId).collect(Collectors.toSet()));
+        assertEquals(policyTitle, driver.getTitle());
+        WebElement policyInfo = driver.findElement(By.id("policyInfo"));
+        List<WebElement> cells = policyInfo.findElements(By.tagName("p"));
+
+        assertEquals(cells.get(0).getText(), "Должность: Директор");
+        assertEquals(cells.get(1).getText(), "Сумма: 500000");
+        assertEquals(cells.get(2).getText(), "Регулярность: каждый месяц");
+        assertEquals(cells.get(3).getText(), "Тип:");
+        assertEquals(cells.get(4).getText(), "Описание:");
+
+        driver.quit();
     }
 
     @Test
-    void testGetEmployeeRolesByProjectId() {
-        Collection<EmpRole> res = empRoleDAO.getEmployeeRolesByProjectId(1L);
+    void getEmployeeProjects() {
+        ChromeDriver driver = new ChromeDriver();
+        driver.get("http://localhost:8080/employee?employeeId=1");
+        assertEquals(employeeTitle, driver.getTitle());
 
-        Set<Long> idExpected = new HashSet<>();
-        idExpected.add(1L);
+        WebElement employeeInfo = driver.findElement(By.id("employeeInfo"));
+        List<WebElement> cells = employeeInfo.findElements(By.tagName("p"));
+        cells.get(7).findElement(By.tagName("a")).click();
 
-        assertEquals(idExpected, res.stream().map(EmpRole::getId).collect(Collectors.toSet()));
+        assertEquals(projectTitle, driver.getTitle());
+        WebElement projectInfo = driver.findElement(By.id("projectInfo"));
+        cells = projectInfo.findElements(By.tagName("p"));
+
+        assertEquals(cells.get(0).getText(), "Название: Проект1");
     }
 
-    @Test
-    void testGetProjectRolesByProjectId() {
-        Collection<ProjectRole> res = projectRoleDAO.getProjectRolesByProjectId(1L);
-
-        Set<String> namesExpected = new HashSet<>();
-        namesExpected.add("руководитель");
-        namesExpected.add("тестировщик");
-        namesExpected.add("разработчик");
-
-        assertEquals(namesExpected, res.stream().map(ProjectRole::getName).collect(Collectors.toSet()));
-    }
-
-    @Test
-    void testEmptyProjectFilter() {
-        ProjectDAO.Filter filter = ProjectDAO.getFilterBuilder().build();
-        Collection<Project> res = projectDAO.getByFilter(filter);
-
-        Set<String> namesExpected = new HashSet<>();
-        namesExpected.add("Проект1");
-        namesExpected.add("Проект2");
-        namesExpected.add("Проект3");
-        namesExpected.add("Проект4");
-
-        assertEquals(namesExpected, res.stream().map(Project::getName).collect(Collectors.toSet()));
-    }
-
-    @Test
-    void testAllProjectFilter() {
-        ProjectDAO.Filter filter = ProjectDAO.getFilterBuilder()
-                .name("Проект1")
-                .description("Описание проекта1").build();
-        Collection<Project> res = projectDAO.getByFilter(filter);
-
-        Set<String> namesExpected = new HashSet<>();
-        namesExpected.add("Проект1");
-
-        assertEquals(namesExpected, res.stream().map(Project::getName).collect(Collectors.toSet()));
-    }
-
-    @Test
-    void testGetPositionByName() {
-        Position res = positionDAO.getPositionByName("Лаборант");
-        assertEquals("Лаборант", res.getName());
-    }
-
-    @Test
-    void testGetAllPositionNames() {
-        Collection<String> res = positionDAO.getAllPositionNames();
-
-        assertThat(res)
-                .containsExactlyInAnyOrder("Лаборант", "Старший лаборант", "Научный сотрудник", "Старший научный сотрудник", "Директор");
-    }
-
-    @Test
-    void testAllPolicyFilter() {
-        PolicyDAO.Filter filter = PolicyDAO.getFilterBuilder()
-                .regularity("каждый месяц")
-                .type("зарплата")
-                .description("зарплата лаборанта").build();
-        Collection<Policy> res = policyDAO.getByFilter(filter);
-
-        Set<Long> idExpected = new HashSet<>();
-        idExpected.add(1L);
-
-        assertEquals(idExpected, res.stream().map(Policy::getId).collect(Collectors.toSet()));
-    }
-
-    @Test
-    void testGetAllPaymentsByEmpId() {
-        Collection<Payment> res = paymentDAO.getAllPaymentsByEmpId(1L);
-
-        Set<Long> idExpected = new HashSet<>();
-        idExpected.add(1L);
-
-        assertEquals(idExpected, res.stream().map(Payment::getId).collect(Collectors.toSet()));
-    }
-
-    @Test
-    void testGetPosHistoryByEmployeeId() {
-        Collection<PosHistory> res = posHistoryDAO.getPosHistoryByEmployeeId(1L);
-
-        Set<Long> idExpected = new HashSet<>();
-        idExpected.add(1L);
-
-        assertEquals(idExpected, res.stream().map(PosHistory::getId).collect(Collectors.toSet()));
-    }
-
-    @Test
-    void testNullGetPosHistoryByEmployeeId() {
-        Collection<PosHistory> res = posHistoryDAO.getPosHistoryByEmployeeId(10L);
-        assertNull(res);
-    }
-
-    @Test
-    void testUpdate() {
-        Employee employee = employeeDAO.getById(3L);
-        employee.status = "уволен";
-        employeeDAO.update(employee);
-        assertEquals("уволен", employeeDAO.getById(3L).status);
-    }
-
-    @Test
-    void testDeleteById() {
-        Long size = (Long) ((Number) (employeeDAO.getAll().size() + 1L));
-        size = size - 1;
-        employeeDAO.deleteById(size);
-        assertEquals(size-1, employeeDAO.getAll().size());
+    private void wait(ChromeDriver driver) {
+        new WebDriverWait(driver, Duration.ofSeconds(1)).until(
+                webDriver -> ((JavascriptExecutor) webDriver)
+                        .executeScript("return document.readyState").equals("complete"));
     }
 
     @BeforeEach
@@ -314,7 +308,7 @@ public class DAOTest {
                 1L,
                 "",
                 "описание роли1 в проекте2"
-                ));
+        ));
         rolesList.add(new ProjectRole(
                 null,
                 projectList.get(2),
@@ -323,7 +317,7 @@ public class DAOTest {
                 1L,
                 "",
                 "описание роли1 в проекте3"
-                ));
+        ));
         rolesList.add(new ProjectRole(
                 null,
                 projectList.get(2),
@@ -485,7 +479,6 @@ public class DAOTest {
         paymentDAO.saveCollection(paymentList);
     }
 
-    @BeforeAll
     @AfterEach
     void cleanDatabase() {
         try (Session session = sessionFactory.openSession()) {

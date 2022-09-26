@@ -79,15 +79,6 @@ public abstract class GenericDAOImpl<T extends GenericEntity<ID>, ID extends Ser
     }
 
     @Override
-    public void delete(T entity) {
-        try (Session session = sessionFactory.openSession()) {
-            session.beginTransaction();
-            session.delete(entity);
-            session.getTransaction().commit();
-        }
-    }
-
-    @Override
     public void deleteById(ID id) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
